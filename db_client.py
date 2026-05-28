@@ -117,6 +117,10 @@ class PostgresCollection:
 
 class DBPool:
     def __init__(self):
+        # Print diagnostic keys to help troubleshoot Azure DB variable names
+        db_keys = [k for k in os.environ.keys() if any(x in k.upper() for x in ["CONN", "DB", "POSTGRES", "SQL", "URL"])]
+        print(f"[DBPool] Diagnostic - Available DB-related keys: {db_keys}")
+
         # 1. Search for DATABASE_URL or AZURE_POSTGRESQL_CONNECTION_STRING
         db_url = os.environ.get("DATABASE_URL") or os.environ.get("AZURE_POSTGRESQL_CONNECTION_STRING")
         
