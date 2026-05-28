@@ -136,6 +136,16 @@ class DBPool:
             if db_url:
                 self.pool = ThreadedConnectionPool(1, 20, dsn=db_url)
             else:
+                # Check if running on Azure App Service
+                is_azure = "WEBSITE_INSTANCE_ID" in os.environ or "WEBSITE_SITE_NAME" in os.environ
+                if is_azure:
+                    print("="*80)
+                    print("[DBPool] WARNING: Running on Azure App Service but no PostgreSQL environment variables")
+                    print("  (DATABASE_URL or AZURE_POSTGRESQL_CONNECTION_STRING) were found!")
+                    print("  Defaulting to localhost (127.0.0.1), which will fail because PostgreSQL is not running locally.")
+                    print("  Please configure your database connection string in the Azure Web App Application Settings.")
+                    print("="*80)
+
                 # 3. Fallback to individual Azure/Docker settings or local defaults
                 host = os.environ.get("AZURE_POSTGRESQL_HOST") or os.environ.get("DB_HOST", "127.0.0.1")
                 port = int(os.environ.get("AZURE_POSTGRESQL_PORT") or os.environ.get("DB_PORT", 5432))

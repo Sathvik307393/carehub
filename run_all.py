@@ -47,9 +47,22 @@ def main():
     print("      CareHub Telemedicine Platform Launcher        ")
     print("====================================================")
     
-    db_url = os.environ.get("DATABASE_URL")
-    if db_url:
-        print("Database Mode: Connected to Remote PostgreSQL via DATABASE_URL")
+    db_url = os.environ.get("DATABASE_URL") or os.environ.get("AZURE_POSTGRESQL_CONNECTION_STRING")
+    has_conn_str = False
+    if not db_url:
+        for key in os.environ.keys():
+            if key.startswith("POSTGRESQLCONNSTR_"):
+                db_url = os.environ[key]
+                has_conn_str = True
+                break
+    else:
+        has_conn_str = True
+
+    if has_conn_str:
+        print("Database Mode: Connected to Remote PostgreSQL via Connection String")
+    elif os.environ.get("AZURE_POSTGRESQL_HOST") or os.environ.get("DB_HOST"):
+        host = os.environ.get("AZURE_POSTGRESQL_HOST") or os.environ.get("DB_HOST")
+        print(f"Database Mode: Connected to Remote/Custom PostgreSQL Host ({host})")
     else:
         print("Database Mode: Connected to Local PostgreSQL (Port 5432)")
         
