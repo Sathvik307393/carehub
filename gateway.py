@@ -10,18 +10,19 @@ import os
 PORT = int(os.environ.get("PORT", 5000))
 
 SERVICES = {
-    "patient": "http://127.0.0.1:5001",
-    "doctor": "http://127.0.0.1:5002",
-    "appointment": "http://127.0.0.1:5003",
-    "prescription": "http://127.0.0.1:5004",
-    "billing": "http://127.0.0.1:5005",
-    "metrics": "http://127.0.0.1:5006",
-    "auth": "http://127.0.0.1:5007",
+    "patient": os.environ.get("SERVICE_PATIENT_URL", "http://127.0.0.1:5001"),
+    "doctor": os.environ.get("SERVICE_DOCTOR_URL", "http://127.0.0.1:5002"),
+    "appointment": os.environ.get("SERVICE_APPOINTMENT_URL", "http://127.0.0.1:5003"),
+    "prescription": os.environ.get("SERVICE_PRESCRIPTION_URL", "http://127.0.0.1:5004"),
+    "billing": os.environ.get("SERVICE_BILLING_URL", "http://127.0.0.1:5005"),
+    "metrics": os.environ.get("SERVICE_METRICS_URL", "http://127.0.0.1:5006"),
+    "auth": os.environ.get("SERVICE_AUTH_URL", "http://127.0.0.1:5007"),
 }
 
 def report_frontend_metrics(elapsed_ms):
     try:
-        url = "http://127.0.0.1:5006/api/metrics/report"
+        metrics_url = SERVICES["metrics"]
+        url = f"{metrics_url}/api/metrics/report"
         data = json.dumps({
             "service": "frontend",
             "status_code": 200,

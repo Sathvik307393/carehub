@@ -23,7 +23,9 @@ if doctors_col.count_documents() == 0:
 
 def report_metrics(status_code, elapsed_ms):
     try:
-        url = "http://127.0.0.1:5006/api/metrics/report"
+        import os
+        metrics_url = os.environ.get("SERVICE_METRICS_URL", "http://127.0.0.1:5006")
+        url = f"{metrics_url}/api/metrics/report"
         data = json.dumps({
             "service": "doctor",
             "status_code": status_code,
