@@ -117,18 +117,35 @@ class PostgresCollection:
 
 class DBPool:
     def __init__(self):
-        db_url = os.environ.get("DATABASE_URL")
+        # 1. Search for DATABASE_URL or AZURE_POSTGRESQL_CONNECTION_STRING
+        db_url = os.environ.get("DATABASE_URL") or os.environ.get("AZURE_POSTGRESQL_CONNECTION_STRING")
+        
+        # 2. Check if Azure Connection Strings tab injected it (prefixed with POSTGRESQLCONNSTR_)
+        if not db_url:
+            for key, val in os.environ.items():
+                if key.startswith("POSTGRESQLCONNSTR_"):
+                    db_url = val
+                    print(f"Found Azure connection string: {key}")
+                    break
+
         try:
             if db_url:
                 self.pool = ThreadedConnectionPool(1, 20, dsn=db_url)
             else:
+                # 3. Fallback to individual Azure/Docker settings or local defaults
+                host = os.environ.get("AZURE_POSTGRESQL_HOST") or os.environ.get("DB_HOST", "127.0.0.1")
+                port = int(os.environ.get("AZURE_POSTGRESQL_PORT") or os.environ.get("DB_PORT", 5432))
+                user = os.environ.get("AZURE_POSTGRESQL_USER") or os.environ.get("DB_USER", "postgres")
+                password = os.environ.get("AZURE_POSTGRESQL_PASSWORD") or os.environ.get("DB_PASSWORD", "SecurePass123!@")
+                database = os.environ.get("AZURE_POSTGRESQL_DB") or os.environ.get("AZURE_POSTGRESQL_DATABASE") or os.environ.get("DB_NAME", "autohub")
+                
                 self.pool = ThreadedConnectionPool(
                     1, 20,
-                    host="127.0.0.1",
-                    port=5432,
-                    user="postgres",
-                    password="SecurePass123!@",
-                    database="autohub"
+                    host=host,
+                    port=port,
+                    user=user,
+                    password=password,
+                    database=database
                 )
             print("PostgreSQL connection pool initialized.")
         except Exception as e:
