@@ -406,24 +406,161 @@
             text-align: center;
             color: var(--text-muted);
         }
+
+        /* Auth Container Styles */
+        .auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at top right, var(--bg-secondary), var(--bg-primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            transition: var(--transition);
+        }
+
+        .auth-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .auth-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .auth-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .auth-toggle-link {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .auth-toggle-link:hover {
+            text-decoration: underline;
+        }
+        
+        .user-profile-badge {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo-section">
-            <div class="logo-icon">C</div>
-            <div class="logo-text">CareHub Portal</div>
+    <!-- AUTHENTICATION PAGE OVERLAY -->
+    <div id="auth-container" class="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <div class="logo-icon">C</div>
+                <div class="logo-text">CareHub</div>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="login-panel">
+                <div class="auth-title">Welcome Back</div>
+                <div class="auth-subtitle">Log in to access your clinical dashboard</div>
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="form-group" style="text-align: left;">
+                        <label>Username</label>
+                        <input type="text" class="form-control" name="username" required placeholder="patient or doctor">
+                    </div>
+                    <div class="form-group" style="text-align: left;">
+                        <label>Password</label>
+                        <input type="password" class="form-control" name="password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 0.5rem;">Log In</button>
+                    <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                        Don't have an account? <span class="auth-toggle-link" onclick="toggleAuthPanel('register')">Register</span>
+                    </p>
+                </form>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-panel" style="display: none;">
+                <div class="auth-title">Create Account</div>
+                <div class="auth-subtitle">Join the CareHub clinical network</div>
+                <form id="register-form" onsubmit="handleRegister(event)">
+                    <div class="form-group" style="text-align: left;">
+                        <label>Username</label>
+                        <input type="text" class="form-control" name="username" required placeholder="e.g. jwayne">
+                    </div>
+                    <div class="form-group" style="text-align: left;">
+                        <label>Password</label>
+                        <input type="password" class="form-control" name="password" required placeholder="••••••••">
+                    </div>
+                    <div class="form-group" style="text-align: left;">
+                        <label>Select Role</label>
+                        <select class="form-control" name="role">
+                            <option value="Patient">Patient</option>
+                            <option value="Doctor">Doctor / Clinician</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-action" style="width: 100%; justify-content: center; margin-top: 0.5rem;">Register</button>
+                    <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                        Already have an account? <span class="auth-toggle-link" onclick="toggleAuthPanel('login')">Log In</span>
+                    </p>
+                </form>
+            </div>
         </div>
-        <div class="header-controls">
-            <span id="uptime-label" style="font-size: 0.85rem; color: var(--text-muted)">Uptime: --</span>
-            <button class="btn-theme" onclick="toggleTheme()" aria-label="Toggle Theme">
-                <svg id="theme-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m11.314 11.314l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path>
-                </svg>
-            </button>
-        </div>
-    </header>
+    </div>
+
+    <!-- MAIN PLATFORM INTERFACE -->
+    <div id="main-app" style="display: none; flex-direction: column; min-height: 100vh; width: 100%;">
+        <header>
+            <div class="logo-section">
+                <div class="logo-icon">C</div>
+                <div class="logo-text">CareHub Portal</div>
+            </div>
+            <div class="header-controls">
+                <div id="user-badge" class="user-profile-badge" style="display: none;">
+                    <span id="user-display-name">--</span>
+                    <span id="user-display-role" class="badge badge-success" style="padding: 0.15rem 0.4rem; font-size: 0.7rem;">--</span>
+                </div>
+                <span id="uptime-label" style="font-size: 0.85rem; color: var(--text-muted)">Uptime: --</span>
+                <button class="btn-theme" onclick="toggleTheme()" aria-label="Toggle Theme">
+                    <svg id="theme-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m11.314 11.314l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path>
+                    </svg>
+                </button>
+                <button class="btn-secondary" style="padding: 0.5rem 0.85rem;" onclick="handleLogout()">Log Out</button>
+            </div>
+        </header>
 
     <div class="app-container">
         <aside>
@@ -636,6 +773,7 @@
             </section>
         </main>
     </div>
+    </div> <!-- Close main-app -->
 
     <!-- MODALS -->
     <!-- Patient Modal -->
@@ -1223,9 +1361,130 @@
             }
         }
 
+        async function checkAuthSession() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                showAuthUI();
+                return;
+            }
+            try {
+                const res = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: token })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    showAppUI(data.username, data.role);
+                } else {
+                    localStorage.removeItem("token");
+                    showAuthUI();
+                }
+            } catch (err) {
+                console.error("Auth verify error", err);
+                localStorage.removeItem("token");
+                showAuthUI();
+            }
+        }
+
+        function showAuthUI() {
+            document.getElementById("auth-container").style.display = "flex";
+            document.getElementById("main-app").style.display = "none";
+        }
+
+        function showAppUI(username, role) {
+            document.getElementById("auth-container").style.display = "none";
+            document.getElementById("main-app").style.display = "flex";
+            document.getElementById("user-badge").style.display = "flex";
+            document.getElementById("user-display-name").textContent = username;
+            document.getElementById("user-display-role").textContent = role;
+            loadData('dashboard');
+        }
+
+        function toggleAuthPanel(panel) {
+            if (panel === 'register') {
+                document.getElementById("login-panel").style.display = "none";
+                document.getElementById("register-panel").style.display = "block";
+            } else {
+                document.getElementById("login-panel").style.display = "block";
+                document.getElementById("register-panel").style.display = "none";
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const form = e.target;
+            const body = {
+                username: form.username.value,
+                password: form.password.value
+            };
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem("token", data.token);
+                    showAppUI(data.username, data.role);
+                } else {
+                    alert(data.error || "Login failed");
+                }
+            } catch (err) {
+                alert("Server connection failed");
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const form = e.target;
+            const body = {
+                username: form.username.value,
+                password: form.password.value,
+                role: form.role.value
+            };
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert("Registration successful! Logging you in...");
+                    const loginRes = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: body.username, password: body.password })
+                    });
+                    const loginData = await loginRes.json();
+                    if (loginRes.ok) {
+                        localStorage.setItem("token", loginData.token);
+                        showAppUI(loginData.username, loginData.role);
+                    } else {
+                        toggleAuthPanel('login');
+                    }
+                } else {
+                    alert(data.error || "Registration failed");
+                }
+            } catch (err) {
+                alert("Server connection failed");
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem("token");
+            showAuthUI();
+        }
+
         // Auto load metrics and dashboard
-        updateDashboardMetrics();
-        setInterval(updateDashboardMetrics, 3000);
+        checkAuthSession();
+        setInterval(() => {
+            if (localStorage.getItem("token")) {
+                updateDashboardMetrics();
+            }
+        }, 3000);
     </script>
 </body>
 </html>

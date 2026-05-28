@@ -11,6 +11,7 @@ SERVICES = [
     ("Appointment", "appointment_service.py"),
     ("Prescription", "prescription_service.py"),
     ("Billing", "billing_service.py"),
+    ("Auth", "auth_service.py"),
     ("Gateway", "gateway.py")
 ]
 

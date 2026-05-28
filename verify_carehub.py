@@ -33,6 +33,37 @@ print("=============================================")
 print("  CareHub Integration Testing Suite          ")
 print("=============================================")
 
+# Cleanup test user from previous run to ensure test idempotency
+try:
+    from db_client import get_db_collection
+    get_db_collection("users").delete_one({"username": "tester"})
+except Exception as e:
+    pass
+
+# 0. Authentication service test
+print("\n[0/6] Testing User Registration & Login...")
+# Register new user
+reg_body = {
+    "username": "tester",
+    "password": "TestPassword123!",
+    "role": "Patient"
+}
+reg_res = post("/api/auth/register", reg_body)
+print(f"  -> User registered: username={reg_res.get('username')}, role={reg_res.get('role')}")
+
+# Login
+login_body = {
+    "username": "tester",
+    "password": "TestPassword123!"
+}
+login_res = post("/api/auth/login", login_body)
+token = login_res.get("token")
+print(f"  -> User logged in successfully. Received token: {token[:10]}...")
+
+# Verify token
+verify_res = post("/api/auth/verify", {"token": token})
+print(f"  -> Token verified: username={verify_res.get('username')}, role={verify_res.get('role')}")
+
 # 1. Patients test
 print("\n[1/6] Querying patient registry (GET /api/patient)...")
 patient_res = get("/api/patient")

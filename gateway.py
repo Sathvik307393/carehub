@@ -16,6 +16,7 @@ SERVICES = {
     "prescription": "http://127.0.0.1:5004",
     "billing": "http://127.0.0.1:5005",
     "metrics": "http://127.0.0.1:5006",
+    "auth": "http://127.0.0.1:5007",
 }
 
 def report_frontend_metrics(elapsed_ms):
